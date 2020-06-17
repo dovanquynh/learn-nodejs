@@ -5,7 +5,6 @@ const bodyParser = require('body-parser')
 const app = express()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-const PORT = 8080
 
 //Upload file
 const fileUpload = require('express-fileupload')
@@ -25,23 +24,44 @@ const files = require('./routers/files')
 const users = require('./routers/users')
 const tasks = require('./routers/tasks')
 
-app.listen(PORT, ()=> {
+const {
+    insertUser,
+    findUserById,
+    findSomeUsers,
+    updateUser,
+    deleteUser,
+    createSomeUserAndPosts,
+    populateUsers,
+    populateBlogPosts,
+    populateComments
+} = require('./database/userController')
+
+// populateUsers()
+// populateBlogPosts()
+// populateComments()
+
+const { PORT } = require('./utils/utility')
+app.listen(PORT, () => {
     console.log(`Server is listening on port: ${PORT}`)
 })
 
-app.get('', (req, res) => {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8')
-    res.send(`<h1 style="color: blue;">Hello world !</h1>`)
-})
+// app.get('', (req, res) => {
+//     res.setHeader('Content-Type', 'text/html; charset=utf-8')
+//     res.send(`<h1 style="color: blue;">Hello world !</h1>`)
+// })
 
-app.use('/systemInfo', systemInfo)
-app.use('/redirectExample', redirectExample)
-app.use('/books', books)
-app.use('/files', files)
-app.use('/users', users)
-app.use('/tasks', tasks)
+// app.use('/systemInfo', systemInfo)
+// app.use('/redirectExample', redirectExample)
+// app.use('/books', books)
+// app.use('/files', files)
+// app.use('/users', users)
+// app.use('/tasks', tasks)
 
-app.use((req, res) => {
-    const http404file = path.join(__dirname)+'/404.html'
-    res.status(404).sendFile(http404file)
-})
+// app.use((req, res) => {
+//     const http404file = path.join(__dirname) + '/404.html'
+//     res.status(404).sendFile(http404file)
+// })
+
+
+const userRouter = require('./routers/userRouter')
+app.use('/users', userRouter)
