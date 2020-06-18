@@ -1,7 +1,10 @@
-const { mongoose } = require('../database')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+
+const { mongoose } = require('../database')
 const { sendEmail } = require('../../utils/utility')
 const { Schema } = mongoose
+const secretString = "secret string"
 
 const UserSchema = new Schema({
     name: { type: String, default: 'unknown', unique: true },
@@ -47,4 +50,66 @@ const activateUser = async (emai, secretKey) => {
     }
 }
 
-module.exports = { User, insertUser, activateUser }
+const loginUser = async (email, password) => {
+    try {
+        let foundUser = await User.findOne({ email: email.trim() })
+            .exec()
+
+        if (!foundUser) {
+            throw "User không tồn tại"
+        }
+
+        if (foundUser.active === 0) {
+            throw "User chưa kích hoạt"
+        }
+
+        let encryptedPassword = foundUser.password
+        let checkPassword = await bcrypt.compare(password, encryptedPassword)
+
+        if (checkPassword === true) {
+            let jsonObject = {
+                id: foundUser._id
+            }
+            let tokenKey = await jwt.sign(
+                jsonObject,
+                secretString,
+                { expiresIn: 86400 }
+            )
+            return tokenKey
+        }
+        else {
+            throw "Password invalid."
+        }
+        
+    } catch (error) {
+        throw error
+    }
+}
+
+const verifyJWT = async (tokenKey) => {
+    try {
+        let decodedJson = await jwt.verify(tokenKey, secretString)
+        if (Date.now() / 1000 > decodedJson.exp) {
+            throw "Token hết hạn, login lại."
+        }
+
+        let foundUser = await User.findById(decodedJson.id)
+
+        if (!foundUser) {
+            throw "Ko tìm thấy user với token này"
+        }
+
+        return foundUser
+
+    } catch (error) {
+        throw error
+    }
+}
+
+module.exports = {
+    User,
+    insertUser,
+    activateUser,
+    loginUser,
+    verifyJWT
+}

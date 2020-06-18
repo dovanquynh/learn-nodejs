@@ -1,10 +1,13 @@
 const express = require('express')
 const router = express.Router()
-const { insertUser, activateUser } = require('../database/models/User')
-const { model } = require('mongoose')
+const {
+    insertUser,
+    activateUser,
+    loginUser,
+    verifyJWT
+} = require('../database/models/User')
 
 router.use((req, res, next) => {
-    console.log('Time:', Date.now())
     next()
 })
 
@@ -33,6 +36,40 @@ router.get('/activateUser', async (req, res) => {
         res.send(`<h1 style="color: blue">Kích hoạt user thành công.</h1>`)
     } catch (error) {
         res.send(`<h1 style="color: red">Không kích hoạt được User.Error: ${error}</h1>`)
+    }
+})
+
+router.post('/loginUser', async (req, res) => {
+    let { email, password } = req.body
+
+    try {
+        let tokenKey = await loginUser(email, password)
+        res.json({
+            tokenKey,
+            result: 'OK',
+            message: 'Đăng nhâp thành công.'
+        })
+    } catch (error) {
+        res.json({
+            result: 'Failed',
+            message: `Đăng nhâp ko thành công. Error: ${error}`
+        })
+    }
+})
+
+router.get('/jwtTest', async (req, res) => {
+    let tokenKey = req.headers['x-access-token']
+    try {
+        await verifyJWT(tokenKey)
+        res.json({
+            result: 'OK',
+            message: 'Verify token successful.'
+        })
+    } catch (error) {
+        res.json({
+            result: 'Failed',
+            message: `Token error. Error: ${error}`
+        })
     }
 })
 
