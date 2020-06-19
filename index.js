@@ -64,4 +64,6 @@ app.listen(PORT, () => {
 
 
 const userRouter = require('./routers/userRouter')
+const blogPostRouter = require('./routers/blogPostRouter')
 app.use('/users', userRouter)
+app.use('/blogposts', blogPostRouter)

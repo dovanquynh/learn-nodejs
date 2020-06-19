@@ -52,8 +52,8 @@ const ProductSchema = new Schema({
 
 //Chuyen Schema sang Model
 // const User = mongoose.model('User', UserSchema)
-const BlogPost = mongoose.model('BlogPost', BlogPostSchema)
+// const BlogPost = mongoose.model('BlogPost', BlogPostSchema)
 const Comment = mongoose.model('Comment', CommentSchema)
 const Product = mongoose.model('Product', ProductSchema)
 
-module.exports = { BlogPost, Comment, Product } 
+module.exports = { Comment, Product } 
