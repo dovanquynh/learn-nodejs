@@ -29,7 +29,7 @@ const insertUser = async (name, email, password) => {
         newUser.email = email
         newUser.password = encryptedPassword
         await newUser.save()
-        await sendEmail(email, encryptedPassword)
+        // await sendEmail(email, encryptedPassword)
     } catch (error) {
         throw error
     }

@@ -13,17 +13,18 @@ router.use((req, res, next) => {
 })
 
 router.post('/register', async (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*')
     let { name, email, password } = req.body
 
     try {
         await insertUser(name, email, password)
         res.json({
-            result: 'OK',
+            result: 'ok',
             message: 'Đăng ký tài khoản thành công, bạn cần mở email để kích hoạt.'
         })
     } catch (error) {
         res.json({
-            result: 'Failed',
+            result: 'failed',
             message: `Ko thể đăng ký. Lỗi: ${error}`
         })
     }
@@ -41,18 +42,19 @@ router.get('/activateUser', async (req, res) => {
 })
 
 router.post('/loginUser', async (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*')
     let { email, password } = req.body
 
     try {
         let tokenKey = await loginUser(email, password)
         res.json({
             tokenKey,
-            result: 'OK',
+            result: 'ok',
             message: 'Đăng nhâp thành công.'
         })
     } catch (error) {
         res.json({
-            result: 'Failed',
+            result: 'failed',
             message: `Đăng nhâp ko thành công. Error: ${error}`
         })
     }
